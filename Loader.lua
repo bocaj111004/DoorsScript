@@ -42,7 +42,7 @@ end
 
 		})
 		
-local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/Universal.lua"
+local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/"
 
 local SupportedGames = {
 	[0] = {
@@ -51,7 +51,7 @@ local SupportedGames = {
 	}
 }
 
-if not SupportedGames[game.PlaceId] then
+if SupportedGames[game.PlaceId] == nil then
 	loadstring(game:HttpGet(repo .. 'Universal.lua'))
 end
 	
