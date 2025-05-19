@@ -14,35 +14,31 @@ if getgenv()[ScriptSettings.genvAddress] then
 
 	})
 	return
-		
+
 end 
 
-		getgenv()[ScriptSettings.genvAddress] = true
+getgenv()[ScriptSettings.genvAddress] = true
 
-	local Players = game:GetService("Players")
-	local LocalPlayer = Players.LocalPlayer
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-	if LocalPlayer.Character == nil then
-		game:GetService("StarterGui"):SetCore("SendNotification",{
-			Title = ScriptSettings.ScriptName,
-			Text = "Script is waiting for the game to load.",
+if LocalPlayer.Character == nil then
+	game:GetService("StarterGui"):SetCore("SendNotification",{
+		Title = ScriptSettings.ScriptName,
+		Text = "Script is waiting for the game to load.",
 
-		})
-		while LocalPlayer.Character == nil do
-			task.wait()
-		end
-	task.wait(1)	
+	})
+	while LocalPlayer.Character == nil do
+		task.wait()
 	end
-	
+	task.wait(1)	
+end
 
-	
-		game:GetService("StarterGui"):SetCore("SendNotification",{
-			Title = ScriptSettings.ScriptName,
-			Text = "Script is now loading.",
 
-		})
-		
-local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/"
+
+
+
+local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/Universal.lua"
 
 local SupportedGames = {
 	[0] = {
@@ -51,9 +47,22 @@ local SupportedGames = {
 	}
 }
 
-if SupportedGames[game.PlaceId] == nil then
+if SupportedGames[game.PlaceId] then
+
+	game:GetService("StarterGui"):SetCore("SendNotification",{
+		Title = ScriptSettings.ScriptName,
+		Text = "Loading script for: " .. SupportedGames[game.PlaceId].GameName .. ".",
+
+	})
+	loadstring(game:HttpGet(repo .. SupportedGames[game.PlaceId].Script))
+else
+	
+	game:GetService("StarterGui"):SetCore("SendNotification",{
+		Title = ScriptSettings.ScriptName,
+		Text = "The current game is not supported. Loading universal script..",
+
+	})
 	loadstring(game:HttpGet(repo .. 'Universal.lua'))
 end
-	
 
 
