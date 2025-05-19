@@ -38,7 +38,7 @@ end
 
 
 
-local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/Universal.lua"
+local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/"
 
 local SupportedGames = {
 	[0] = {
