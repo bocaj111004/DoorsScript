@@ -1,4 +1,3 @@
-
 local Settings = getgenv()._Settings
 
 local Players = game:GetService("Players")
@@ -16,6 +15,7 @@ local OtherLinora = false
 local Humanoid = Character:FindFirstChildOfClass("Humanoid")
 
 local repo = 'https://raw.githubusercontent.com/bocaj111004/Linora/refs/heads/main/'
+local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/bocaj111004/ESPLibrary/refs/heads/main/main.lua"))()
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local NotificationCustom1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
@@ -58,13 +58,7 @@ local function Sound()
 	end
 end
 if getgenv()[Settings.genvAddress] ~= true then
-if OtherLinora == false then
-	if not game.Players.LocalPlayer.Character then
-		Notify({Title = ScriptName .. " Initialisation", Description = ScriptName .. " is waiting for the game to load."})
-		Sound()
-		game.Players.LocalPlayer.CharacterAdded:Wait()
-		task.wait(1)
-	end
+
 	
 
 
@@ -143,8 +137,8 @@ local FlyMethod = "Normal"
 local AntiRagdoll = false
 local ot = 0
 local AntiBan = false
-local ft = 0.7
-local textsize = 16
+ESPLibrary:SetFillTransparency(0.75)
+	ESPLibrary:SetTextSize(20)
 local textweight = ""
 local View = false
 local ViewPlayer = ""
@@ -160,252 +154,18 @@ local flex = false
 local flexspeed = 0.25
 local textfont = "RobotoCondensed"
 local function esp(Target,TracerTarget,Text, ColorText, shoulddestroy, ismonster)
-	pcall(function()
-		local outlinecolor = Color3.fromRGB(255,255,255)
-		game["Run Service"].RenderStepped:Connect(function()
-			if oc ~= "White" then
-				outlinecolor = ColorText	
-			else
-				outlinecolor = Color3.fromRGB(222,222,222)
-			end
-		end)
-		if game.Players:GetPlayerFromCharacter(Target) then
-			if game.Players:GetPlayerFromCharacter(Target).Team ~= nil then
-				ColorText = game.Players:GetPlayerFromCharacter(Target).TeamColor.Color
-			end
-		end
-		task.wait(0.25)
-		if not Target:FindFirstChild("ESP") then
-			Target:SetAttribute("ESP", true)
 
-			local h = Instance.new("Highlight")
-			local text = Instance.new("BillboardGui")
-			text.Parent = Target
-			text.Adornee = TracerTarget
 
-			text.StudsOffset = Vector3.new(0,0,0)
-			text.Size = UDim2.new(1,0,1,0)
-			text.AlwaysOnTop = true
-			text.MaxDistance = math.huge
-			local label = Instance.new("TextLabel")
-			label.Position = UDim2.new(0,0,0,0)
-			label.Size = UDim2.new(1,0,1,0)
-			label.Parent = text
-			label.BackgroundTransparency = 1
-			label.RichText = true
-			label.TextColor3 = ColorText
-			label.Font = Enum.Font.RobotoCondensed
-			label.TextSize = textsize			
-			local camera = workspace.CurrentCamera
+			ESPLibrary:AddESP({
+				Object = Target,
+				Text = Text,
+				Color = ColorText
+			})
 			
-
-
-
-
-
-
-
-			h.Parent = Target
-			
-
-			h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-			h.OutlineColor = outlinecolor
-			h.FillColor = ColorText
-			h.FillTransparency = ft
-			h.OutlineTransparency = ot
-			h.Name = "ESP"
-
-
-			local LineColor = Color3.new(255, 255, 255)
-			local TeammateLineColor = Color3.new(0, 0.25, 1)
-			local GenericHumanoidLineColor = Color3.new(1, 0, 0)
-			local LineWidth = 0
-			local DrawTeammates = true
-			local FindHumanoids = true
-			local linesgui = Instance.new("ScreenGui")
-			linesgui.Name = "Tracers"
-			linesgui.Parent = game.CoreGui
-
-			local LineOrigin = nil
-
-
-			local Camera = workspace.CurrentCamera
-			local function GetLineOrigin()
-
-				if tracerorigin == "Center" then
-					local mousePos = game:GetService("UserInputService"):GetMouseLocation();
-					return Vector2.new(Camera.ViewportSize.X/2,Camera.ViewportSize.Y/2.25)
-
-				elseif tracerorigin == "Top" then
-					return Vector2.new(Camera.ViewportSize.X/2, -Camera.ViewportSize.Y/18)	
-				elseif tracerorigin == "Mouse" then
-					return Vector2.new(game.Players.LocalPlayer:GetMouse().X,game.Players.LocalPlayer:GetMouse().Y)
-					
-				else
-					if game.UserInputService.TouchEnabled and not game.UserInputService.KeyboardEnabled then
-						return Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y*0.94)
-					else
-						return Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y*0.9475)
-					end
-				end
-			end
-			LineOrigin = GetLineOrigin()
-			game["Run Service"].RenderStepped:Connect(function()
-				LineOrigin =  GetLineOrigin()
+			Target.Destroying:Connect(function()
+				ESPLibrary:RemoveObject(Target)
 			end)
 
-
-
-
-
-			local Lines = {}
-
-
-			local function Setline(Line, Width, ColorToSet, Origin, Destination)
-				local Position = (Origin + Destination) / 2
-				Line.Position = UDim2.new(0, Position.X, 0, Position.Y)
-				local Length = (Origin - Destination).Magnitude
-				Line.Name = "ESPLine"
-				Line.Size = UDim2.new(0, Length, 0, Width)
-				Line.Rotation = math.deg(math.atan2(Destination.Y - Origin.Y, Destination.X - Origin.X))
-				Line.BackgroundColor3 = h.FillColor
-				Line.BorderColor3 = h.FillColor
-				Line.BorderSizePixel = 0
-				
-				if Line:FindFirstChild("UIStroke") then
-					Line.UIStroke.Color = h.FillColor
-				end
-
-			end
-
-
-			local r = game:GetService("RunService").RenderStepped:Connect(function()
-				local fontsize = math.round((textsize/1.3))
-				h.Enabled = highlight
-				local vector, onScreen = camera:WorldToScreenPoint(TracerTarget.Position)
-				if dist == true then
-
-					label.Text = Text..'\n<font size="'..fontsize..'">['..math.round(game.Players.LocalPlayer:DistanceFromCharacter(TracerTarget.Position))..']</font>'
-
-				else
-					label.Text = Text
-				end
-				if rainbow == true then
-					label.TextColor3 = Color
-
-				else
-					label.TextColor3 = ColorText
-
-				end
-
-				h.FillTransparency = ft
-				h.OutlineTransparency = ot
-				label.TextTransparency = tt
-				label.TextSize = textsize
-				label.TextStrokeTransparency = 0
-				label.Font = Enum.Font[textfont]
-				
-				
-
-				if rainbow == true then
-					h.FillColor = Color
-					if oc ~= "White" then
-						h.OutlineColor = Color
-					else	
-						h.OutlineColor = outlinecolor
-					end
-
-
-				else
-					h.FillColor = ColorText
-				end
-				if rainbow == false then
-
-					h.OutlineColor = outlinecolor
-				end
-				task.wait()
-				if Target:GetAttribute("ESP") == true then
-					if tracers == true and Target:GetAttribute("ESP") == true then
-						text.StudsOffset = Vector3.new(0,0.5,0)
-						local Targets = {}
-						local Character = Target
-						if not Character then return end
-						local TargetPart = TracerTarget
-						if TargetPart == nil then
-							for i,line in pairs(Lines) do
-								line:Destroy()
-							end
-						else
-							if not TargetPart then end
-							local ScreenPoint, OnScreen = Camera:WorldToScreenPoint(TargetPart.Position)
-
-							if OnScreen then
-								table.insert(Targets, {Vector2.new(ScreenPoint.X, ScreenPoint.Y), ColorText})
-							end
-
-							if #Targets > #Lines then
-
-								local NewLine = Instance.new("Frame")
-								NewLine.Name = "Snapline"
-								NewLine.AnchorPoint = Vector2.new(.5, .5)
-								NewLine.Parent = linesgui
-							
-								local Border = Instance.new("UIStroke")
-								Border.Parent = NewLine
-								Border.Thickness = 0.75
-								Border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-
-
-								table.insert(Lines, NewLine)
-							end
-							for i, Line in pairs(Lines) do
-								local TargetData = Targets[i]
-								if not TargetData then
-									Line:Destroy()
-									table.remove(Lines, i)
-									continue
-								end
-								Setline(Line, LineWidth, ColorText, LineOrigin, TargetData[1])
-
-
-
-
-							end
-						end
-					elseif tracers == false then
-						text.StudsOffset = Vector3.new(0,0,0)
-						for i,line in pairs(Lines) do
-							line:Destroy()
-						end
-					end	
-				elseif Target:GetAttribute("ESP") == false then
-					for i,line in pairs(Lines) do
-						line:Destroy()
-					end
-					linesgui:Destroy()
-					h:Destroy()
-					text:Destroy()
-				end
-
-			end)
-game.Players.PlayerRemoving:Connect(function(Player)
-		if Player == game.Players:GetPlayerFromCharacter(Target) then
-			
-					r:Disconnect()
-					linesgui:Destroy()
-					text:Destroy()
-		end
-		end)
-		Target:GetPropertyChangedSignal("Parent"):Connect(function()
-				r:Disconnect()
-				linesgui:Destroy()
-				text:Destroy()
-
-			end)
-		end
-
-	end)
 
 end
 		local CommandInProgress = false
@@ -415,18 +175,7 @@ end
 			Humanoid = char:WaitForChild("Humanoid")
 			CommandInProgress = false
 		end)
-Library:Notify("Info | Game Support Found. Loading script...")
-wait(0.5)
-Library:Notify("Info | Loading Main Tab")
-wait(0.5)
-Library:Notify("Info | Loading UI Settings Tab")
-wait(0.5)
-Library:Notify("Info | Loading GUI")
-wait(1)
-Title = "Universal"
-Library:Notify("Info | Loading Succesful. Thanks For Using "..ScriptName.."!")
-wait(0.5)
-Sound()
+
 
 local infjump = false
 local Window = Library:CreateWindow({
@@ -938,14 +687,14 @@ Toggles.Toggle125:AddColorPicker('ColorPicker1', {
 ESP:AddDivider()
 ESP:AddSlider('Slider3', {
 	Text = 'Fill Transparency',
-	Default = 0.7,
+	Default = 0.75,
 	Min = 0,
 	Max = 1,
 	Rounding = 2,
 	Compact = false,
 
 	Callback = function(Value)
-		ft = Value
+		ESPLibrary:SetFillTransparency(Value)
 
 	end
 })
@@ -958,7 +707,7 @@ ESP:AddSlider('Slider4', {
 	Compact = false,
 
 	Callback = function(Value)
-		ot = Value
+			ESPLibrary:SetOutlineTransparency(Value)
 
 	end
 })
@@ -971,7 +720,7 @@ ESP:AddSlider('Slider5', {
 	Compact = false,
 
 	Callback = function(Value)
-		tt = Value
+			ESPLibrary:SetTextTransparency(Value)
 
 	end
 })
@@ -984,11 +733,11 @@ ESP:AddSlider('Slider5', {
 	Compact = false,
 
 	Callback = function(Value)
-		textsize = Value
+			ESPLibrary:SetTextSize(Value)
 
 	end
 })
-ESP:AddDropdown("ESPFont", { Values = { "Arial", "SourceSans", "Highway","FredokaOne", "Fantasy", "Gotham", "DenkOne", "JosefinSans", "Nunito", "Oswald", "RobotoCondensed", "Sarpanch", "Ubuntu" }, Default = 10, Multi = false, Text = "Text Font", Callback = function(Value) textfont = Value end})
+	ESP:AddDropdown("ESPFont", { Values = { "Arial", "SourceSans", "Highway","FredokaOne", "Fantasy", "Gotham", "DenkOne", "JosefinSans", "Nunito", "Oswald", "RobotoCondensed", "Sarpanch", "Ubuntu" }, Default = 10, Multi = false, Text = "Text Font", Callback = function(Value) ESPLibrary:SetFont(Value) end})
 ESP:AddDivider()
 ESP:AddToggle('Toggle21', {
 	Text = 'Rainbow ESP',
@@ -996,30 +745,17 @@ ESP:AddToggle('Toggle21', {
 	Tooltip = nil, -- Information shown when you hover over the toggle
 
 	Callback = function(Value)
-		rainbow = Value
+			ESPLibrary:SetRainbow(Value)
 	end
 })
 ESP:AddDivider()
-ESP:AddToggle('Toggle776', {
-	Text = 'Enable Highlight',
+ESP:AddToggle('Toggle778', {
+	Text = 'Match Colors',
 	Default = true, -- Default value (true / false)
 	Tooltip = nil, -- Information shown when you hover over the toggle
 
 	Callback = function(Value)
-		highlight = Value
-	end
-})
-ESP:AddToggle('Toggle778', {
-	Text = 'White Outline',
-	Default = false, -- Default value (true / false)
-	Tooltip = nil, -- Information shown when you hover over the toggle
-
-	Callback = function(Value)
-		if Value == true then
-			oc = "White"
-		else
-			oc = "Same as Fill Color"
-		end
+		ESPLibrary:SetMatchColors(Value)
 	end
 })
 
@@ -1029,7 +765,7 @@ ESP:AddToggle('Toggle105', {
 	Tooltip = nil, -- Information shown when you hover over the toggle
 
 	Callback = function(Value)
-		dist = Value
+		ESPLibrary:SetShowDistance(Value)
 	end
 })
 ESP:AddDivider()
@@ -1039,7 +775,7 @@ ESP:AddToggle('Toggle5', {
 	Tooltip = nil, -- Information shown when you hover over the toggle
 
 	Callback = function(Value)
-		tracers = Value
+			ESPLibrary:SetTracers(Value)
 	end
 })
 ESP:AddDropdown('Dropdown5', {
@@ -1051,7 +787,7 @@ ESP:AddDropdown('Dropdown5', {
 	Tooltip = nil, -- Information shown when you hover over the dropdown
 
 	Callback = function(Value)
-		tracerorigin = Value
+			ESPLibrary:SetTracerOrigin(Value)
 	end
 })
 local Trolling = Tabs.Main:AddRightGroupbox('Trolling')
@@ -1509,9 +1245,4 @@ else
 	getgenv().Library:Notify(ScriptName .. " Initialisation | ".."Another script using Linora has been detected. Please unload it to use "..ScriptName..".")
 	Sound()
 		getgenv()[Settings.genvAddress] = false
-end
-
-else
-	Notify({Title = "Loading Error", Description = "Script has already been executed."})
-	Sound()
 end
