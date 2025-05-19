@@ -1,39 +1,59 @@
 local ScriptSettings = {
- ScriptName = "Jacob's Epic Script",
- genvAddress = "JES"
+	ScriptName = "Jacob's Epic Script",
+	genvAddress = "JES"
 }
 
-getgenv()["_Settings"] = Settings
+getgenv()["_Settings"] = ScriptSettings
 
-if getgenv()[ScriptSettings.genvAddress] == true then
- 
-	
+if getgenv()[ScriptSettings.genvAddress] then
+
+
 	game:GetService("StarterGui"):SetCore("SendNotification",{
 		Title = ScriptSettings.ScriptName,
 		Text = "Script has already been executed.",
 
 	})
- return
+	return
+		
+end
 
- getgenv()[ScriptSettings.genvAddress] = true
+		getgenv()[ScriptSettings.genvAddress] = true
 
 	local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+	local LocalPlayer = Players.LocalPlayer
 
-if not LocalPlayer.Character then
-	game:GetService("StarterGui"):SetCore("SendNotification",{
-		Title = ScriptSettings.ScriptName,
-		Text = "Script is waiting for the game to load.",
-
-	})
-		while not LocalPlayer.Character do
-		task.wait()
-	end
+	if LocalPlayer.Character == nil then
 		game:GetService("StarterGui"):SetCore("SendNotification",{
-		Title = ScriptSettings.ScriptName,
-		Text = "Script is now loading.",
+			Title = ScriptSettings.ScriptName,
+			Text = "Script is waiting for the game to load.",
 
-	})
+		})
+		while LocalPlayer.Character == nil do
+			task.wait()
+		end
+	task.wait(1)	
 	end
+	
+
+	
+		game:GetService("StarterGui"):SetCore("SendNotification",{
+			Title = ScriptSettings.ScriptName,
+			Text = "Script is now loading.",
+
+		})
+		
+local repo = "https://raw.githubusercontent.com/bocaj111004/ScriptHub/refs/heads/main/Games/Universal.lua"
+
+local SupportedGames = {
+	[0] = {
+		GameName = "Doors Lobby",
+		Script = "Doors/Lobby.lua"
+	}
+}
+
+if not SupportedGames[game.PlaceId] then
+	loadstring(game:HttpGet(repo .. 'Universal.lua'))
+end
+	
 
 
